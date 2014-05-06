@@ -142,6 +142,18 @@
 
 (fn [& args] (and ((comp boolean some) identity args) (not-every? identity args)))
 
+; 88 - Symmetric Difference
+; =========================
+
+; Write a function which returns the symmetric difference of two sets. The symmetric difference is the set of items 
+; belonging to one but not both of the two sets.
+
+(fn [s1 s2]
+  (set
+    (for [e (clojure.set/union s1 s2) 
+            :when (or (nil? (s1 e)) (nil? (s2 e)))]
+      e)))
+
 ; 90 - Cartesian product
 ;==========================
 
@@ -176,7 +188,28 @@ partial #(reduce * (repeat %1 %2))
 
 ; Convert a binary number, provided in the form of a string, to its numerical value.
 
-#(reduce + 0 (map-indexed (fn [n item] (if (= item \0) 0 (Math.pow 2 n))) (reverse %)))
+#(reduce + 0 (map-indexed (fn [n item] (if (= item \0) 0 (int (Math/pow 2 n)))) (reverse %)))
+
+; 126 - Through the Looking Class
+;================================
+
+; Enter a value which satisfies the following.
+
+(let [x Class]
+  (and (= (class x) x) x))
+
+; 143 - Dot product
+;===========================
+
+; Create a function that computes the dot product of two sequences. You may assume that the vectors will have the same length.
+
+(fn [s1 s2]
+  (apply + (map #(* (first %) (second %)) (partition 2 (interleave s1 s2)))))
+
+; Much better solution
+
+(fn [as bs]
+  (reduce + (map * as bs)))
 
 
 ; 166 - Compairisons
