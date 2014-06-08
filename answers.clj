@@ -109,7 +109,7 @@
 ; 63 - Group a sequence
 ;==========================
 
-; Given a function f and a sequence s, write a function which returns a map. The keys should be 
+; Given a function f and a sequence s, write a function which returns a map. The keys should be
 ; the values of f applied to each item in s. The value at each key should be a vector of corresponding items
 ; in the order they appear in s.
 
@@ -145,12 +145,12 @@
 ; 88 - Symmetric Difference
 ; =========================
 
-; Write a function which returns the symmetric difference of two sets. The symmetric difference is the set of items 
+; Write a function which returns the symmetric difference of two sets. The symmetric difference is the set of items
 ; belonging to one but not both of the two sets.
 
 (fn [s1 s2]
   (set
-    (for [e (clojure.set/union s1 s2) 
+    (for [e (clojure.set/union s1 s2)
             :when (or (nil? (s1 e)) (nil? (s2 e)))]
       e)))
 
@@ -161,6 +161,22 @@
 
 #(set (for [a %1 b %2] [a b]))
 
+; 97 - Pascal's Triangle
+;==========================
+
+; Pascal's triangle is a triangle of numbers computed using the following rules:
+;
+; - The first row is 1.
+; - Each successive row is computed by adding together adjacent numbers in the row above, and adding a 1 to the beginning and end of the row.
+;
+; Write a function which returns the nth row of Pascal's Triangle.
+
+(fn pascal [n]
+  (condp = n
+    1 [1]
+    2 [1 1]
+    (conj (into [1] (mapv #(apply + %) (partition 2 1 (pascal (dec n))))) 1)))
+
 ; 99 - Product Digits
 ;==========================
 
@@ -168,7 +184,6 @@
 
 #(map (fn [c] (- (int c) (int \0))) (seq (str (* %1 %2))))
 
-;
 ; 107 - Simple closures
 ;==========================
 
@@ -182,6 +197,26 @@
 ; the scope in which it is defined.
 
 partial #(reduce * (repeat %1 %2))
+
+; 118 - Re-implement Map
+;==========================
+
+; Map is one of the core elements of a functional programming language. Given a function f and an input sequence s, 
+; return a lazy sequence of (f x) for each element x in s.
+
+(fn m [f x]
+  (if (empty? x) ()
+    (cons (f (first x)) (lazy-seq (m f (rest x))))))
+
+
+; 118 - Sum of square of digits
+;==============================
+
+; Write a function which takes a collection of integers as an argument. Return the count of how many elements are smaller 
+; than the sum of their squared component digits. 
+; For example: 10 is larger than 1 squared plus 0 squared; whereas 15 is smaller than 1 squared plus 5 squared
+
+(comp count (partial filter (fn [n] (< n (reduce + (map #(* % %) (map 'Integer/parseInt (str n))))))))
 
 ; 122 - Read a binary number
 ;===========================
@@ -198,6 +233,26 @@ partial #(reduce * (repeat %1 %2))
 (let [x Class]
   (and (= (class x) x) x))
 
+; 135 - Infix Calculator
+;================================
+
+; Your friend Joe is always whining about Lisps using the prefix notation for math. Show him how you could easily write a function that does math using the infix notation.
+; Is your favorite language that flexible, Joe? Write a function that accepts a variable length mathematical expression consisting of numbers and the
+; operations +, -, *, and /. Assume a simple calculator that does not do precedence and instead just calculates left to right.
+
+(fn infix [a op b & rest]
+  (let [r (op a b)]
+    (if (nil? rest) r
+      (apply infix (conj rest r)))))
+
+; Much better solution:
+
+(fn [x & ops]
+  (reduce
+    (fn [x [op operand]] (op x operand))
+    x
+    (partition 2 ops)))
+
 ; 143 - Dot product
 ;===========================
 
@@ -211,6 +266,13 @@ partial #(reduce * (repeat %1 %2))
 (fn [as bs]
   (reduce + (map * as bs)))
 
+
+; 157 - Indexing Sequences
+;===========================
+
+; Transform a sequence into a sequence of pairs containing the original elements along with their index.
+
+#(map (fn [a b] [a b]) % (range))
 
 ; 166 - Compairisons
 ;==========================
