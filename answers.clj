@@ -161,6 +161,21 @@
 
 #(set (for [a %1 b %2] [a b]))
 
+; 95 - To Tree, or not to Tree
+;=============================
+
+; Write a predicate which checks whether or not a given sequence represents a binary tree. 
+; Each node in the tree must have a value, a left child, and a right child.
+
+(defn tree?
+  ([] false)
+  ([t] 
+   (if (and (coll? t) (= (count t) 3))
+     (let [[v l r] t]
+       (and (or (nil? l) (tree? l)) (or (nil? r) (tree? r)))) 
+     false))
+  ([a b & rest] false))
+
 ; 97 - Pascal's Triangle
 ;==========================
 
@@ -216,7 +231,7 @@ partial #(reduce * (repeat %1 %2))
 ; than the sum of their squared component digits. 
 ; For example: 10 is larger than 1 squared plus 0 squared; whereas 15 is smaller than 1 squared plus 5 squared
 
-(comp count (partial filter (fn [n] (< n (reduce + (map #(* % %) (map 'Integer/parseInt (str n))))))))
+(comp count (partial filter (fn [n] (< n (reduce + (map #(* % %) (map #(- (int %) 48) (str n))))))))
 
 ; 122 - Read a binary number
 ;===========================
@@ -232,6 +247,27 @@ partial #(reduce * (repeat %1 %2))
 
 (let [x Class]
   (and (= (class x) x) x))
+
+; 128 - Recognize Playing Cards
+;================================
+
+; A standard American deck of playing cards has four suits - spades, hearts, diamonds, and clubs - 
+; and thirteen cards in each suit. Two is the lowest rank, followed by other integers up to ten; 
+; then the jack, queen, king, and ace.
+;
+; It's convenient for humans to represent these cards as suit/rank pairs, such as H5 or DQ: the heart five 
+; and diamond queen respectively. But these forms are not convenient for programmers, so to write a card game
+; you need some way to parse an input string into meaningful components. For purposes of determining rank,
+; we will define the cards to be valued from 0 (the two) to 12 (the ace)
+;
+; Write a function which converts (for example) the string "SJ" into a map of {:suit :spade, :rank 9}. 
+; A ten will always be represented with the single character "T", rather than the two characters "10".
+
+(defn parse-card [spec]
+  (zipmap 
+      [:suit :rank]
+      (map {\S :spade \H :heart \D :diamond \C :club
+        \2 0 \3 1 \4 2 \5 3 \6 4 \7 5 \8 6 \9 7 \T 8 \J 9 \Q 10 \K 11 \A 12 } spec)))
 
 ; 135 - Infix Calculator
 ;================================
