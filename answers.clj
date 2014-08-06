@@ -199,6 +199,31 @@
 
 #(map (fn [c] (- (int c) (int \0))) (seq (str (* %1 %2))))
 
+; 100 - Least Common Multiple
+;============================
+
+; Write a function which calculates the least common multiple. 
+; Your function should accept a variable number of positive integers or ratios.
+
+; See http://en.wikipedia.org/wiki/Least_common_multiple#A_simple_algorithm
+
+; Learned:
+; - recur uses a fixed number of arguments, can't "apply" recur
+
+(fn lcm [& args]
+  (loop [x args]
+    (if (apply = x) (first x)
+      (let [least (apply min x)
+          index (.indexOf x least)
+          delta (nth args index)
+          next (map-indexed #(if (= %1 index) (+ %2 delta) %2) x)]
+        (recur next)))))
+
+(let [args '(2 3) 
+      least (first (sort args)) 
+      index (.indexOf args least)] 
+  (map-indexed #(if (= %1 index) (+ %2 least) %2)))
+
 ; 107 - Simple closures
 ;==========================
 
