@@ -176,6 +176,30 @@
      false))
   ([a b & rest] false))
 
+; 96 - Beauty is Symmetry
+;=============================
+
+; Let us define a binary tree as "symmetric" if the left half of the tree is the mirror image of the right half of the tree. 
+; Write a predicate to determine whether or not a given binary tree is symmetric. 
+; (see To Tree, or not to Tree for a reminder on the tree representation we're using).
+
+(fn symmetric?
+  ([[v l r]]
+   (or (and (nil? l) (nil? r))
+       (symmetric? l r)))
+  ([[v1 l1 r1] [v2 l2 r2]]
+   (and (= v1 v2)
+        (or (and (nil? l1) (nil? r2))
+            (symmetric? l1 r2))
+        (or (and (nil? r1) (nil? l2))
+            (symmetric? r1 l2)))))
+
+; Learn - really cool answer, uses implicit traversal of the = operator.
+
+(fn [[v l r]]
+  (= r ((fn flip [[v l r :as t]]
+          (when t
+            [v (flip r) (flip l)])) l)))
 ; 97 - Pascal's Triangle
 ;==========================
 
@@ -328,6 +352,24 @@ partial #(reduce * (repeat %1 %2))
   (reduce + (map * as bs)))
 
 
+; 147 - Pascal's Trapezoid
+;===========================
+
+; Write a function that, for any given input vector of numbers, returns an infinite lazy sequence of vectors, 
+; where each next one is constructed from the previous following the rules used in Pascal's Triangle. 
+; For example, for [3 1 2], the next row is [3 4 3 2].
+
+; Beware of arithmetic overflow! In clojure (since version 1.3 in 2011), 
+; if you use an arithmetic operator like + and the result is too large to fit into a 64-bit integer, an exception is thrown. 
+; You can use +' to indicate that you would rather overflow into Clojure's slower, arbitrary-precision bigint.
+
+#(iterate 
+  (fn [a]
+    (mapv (fn [[a b]] (+' a b))
+         (partition 2
+                   (interleave (conj a 0) (into [0] a))))) %)
+
+
 ; 157 - Indexing Sequences
 ;===========================
 
@@ -349,3 +391,16 @@ partial #(reduce * (repeat %1 %2))
     (cond (op x y) :lt
           (op y x) :gt
           :default :eq))
+
+; 173 - Intro to Destructuring 2
+;===============================
+
+; Sequential destructuring allows you to bind symbols to parts of sequential things (vectors, lists, seqs, etc.): (let [bindings* ] exprs*) 
+; Complete the bindings so all let-parts evaluate to 3.
+
+(= 3
+  (let [[__] [+ (range 3)]] (apply __))
+  (let [[[__] b] [[+ 1] 2]] (__ b))
+  (let [[__] [inc 2]] (__)))
+
+; answer "a c"
