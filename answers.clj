@@ -352,6 +352,25 @@ partial #(reduce * (repeat %1 %2))
   (reduce + (map * as bs)))
 
 
+; 146 - Trees Into Tables
+;===========================
+
+; Because Clojure's for macro allows you to "walk" over multiple sequences in a nested fashion, 
+; it is excellent for transforming all sorts of sequences. If you don't want a sequence as your 
+; final output (say you want a map), you are often still best-off using for, because you can produce
+; a sequence and feed it into a map, for example.
+
+; For this problem, your goal is to "flatten" a map of hashmaps. Each key in your output map 
+; should be the "path"1 that you would have to take in the original map to get to a value, 
+; so for example {1 {2 3}} should result in {[1 2] 3}. You only need to flatten one level of 
+; maps: if one of the values is a map, just leave it alone.
+
+#(into 
+  {}
+  (for [[k v] %
+        [k2 v2] v]
+       [[k k2] v2]))
+
 ; 147 - Pascal's Trapezoid
 ;===========================
 
@@ -369,6 +388,43 @@ partial #(reduce * (repeat %1 %2))
          (partition 2
                    (interleave (conj a 0) (into [0] a))))) %)
 
+
+; 153 - Pairwise Disjoint Sets
+;=============================
+
+; Given a set of sets, create a function which returns true if no two of those sets have any 
+; elements in common1 and false otherwise. Some of the test cases are a bit tricky, 
+; so pay a little more attention to them.
+
+; Learned : To manipulate head and tail, you need to convert set into a list using
+; (into '() set), (seq set) works too.
+; - and is a macro and can't be applied or used as a reducer
+; - it's sometimes better to code based on a logical conclusion (all elements in each set have to
+; be distinct, if the sets are pairwise disjoint) instead of coding a literal solution.
+
+#(let [none-in-common (fn [[s1 s2]]
+                       (= #{} (clojure.set/intersection s1 s2)))
+       all-pairs (fn all-pairs [[h & t :as s]]
+                    (if (nil? t) nil
+                      (concat (for [x t] [h x])
+                              (all-pairs t))))]
+   (reduce (fn [a b] (and a b)) 
+           (map none-in-common (all-pairs (seq %)))))
+
+(defn none-in-common [[s1 s2]]
+                       (= #{} (clojure.set/intersection s1 s2)))
+(defn all-pairs [[h & t :as s]]
+  (if (nil? t) nil
+    (concat (for [x t] [h x])
+            (all-pairs t))))
+
+; Much better answer, codes a consequence of being pairwise disjoint
+
+(fn [src]
+  (let [x (mapcat #(distinct (seq %)) src)]
+    (= (count x) (count (distinct x)))
+   )
+  )
 
 ; 157 - Indexing Sequences
 ;===========================
