@@ -80,6 +80,32 @@
 
 #(vector (take %1 %2) (drop %1 %2))
 
+; 44 - Rotate Sequence
+;==========================
+
+; Write a function which can rotate a sequence in either direction.
+
+(def rotate-sequence
+  (fn [n s]
+    (let [delta (mod n (count s))]
+      (concat (drop delta s) (take delta s)))))
+
+; Learn : split-at will split a sequence at a given index.  I like austin taylor's solution below
+; because it only goes through the list once.
+
+(fn [n s]
+  (let [[a b] (split-at (mod n (count s)) s)]
+    (concat b a)))
+
+; 46 - Flipping Out
+;==========================
+
+; Write a higher-order function which flips the order of the arguments of an input function.
+
+(fn [f]
+  (fn [& args]
+    (apply f (reverse args))))
+
 ; 61 - Map construction
 ;==========================
 
